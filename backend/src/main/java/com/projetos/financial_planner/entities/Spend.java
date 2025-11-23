@@ -19,6 +19,10 @@ public class Spend {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Spend() {}
 
     public Spend(Long id, Date spendDate, Double spendValue, String description, Category category) {
