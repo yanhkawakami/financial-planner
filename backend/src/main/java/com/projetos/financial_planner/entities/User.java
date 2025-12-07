@@ -2,6 +2,7 @@ package com.projetos.financial_planner.entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +30,11 @@ public class User {
 
     @OneToMany
     @JoinColumn(name = "user_id")
-    private List<Spend> spends;
+    private List<Spend> spends = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Role> roles = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -74,6 +79,8 @@ public class User {
     public List<Spend> getSpends() {
         return spends;
     }
+
+    public List<Role> getRoles() { return roles; }
 
     @Override
     public boolean equals(Object o) {
