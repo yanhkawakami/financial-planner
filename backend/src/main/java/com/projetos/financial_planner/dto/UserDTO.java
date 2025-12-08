@@ -48,7 +48,7 @@ public class UserDTO {
         }
         roles = new java.util.HashSet<>();
         for (Role role : entity.getRoles()) {
-            roles.add(role.getName());
+            roles.add(role.getAuthority());
         }
     }
 

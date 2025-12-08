@@ -12,13 +12,13 @@ public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String authority;
 
     public Role() {}
 
-    public Role(Long id, String name) {
+    public Role(Long id, String authority) {
         this.id = id;
-        this.name = name;
+        this.authority = authority;
     }
 
     public Long getId() {
@@ -29,28 +29,25 @@ public class Role implements GrantedAuthority {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String getAuthority() {
+        return authority;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.authority = name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(name, role.name);
+        return Objects.equals(authority, role.authority);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hashCode(authority);
     }
 
-    @Override
-    public String getAuthority() {
-        return name;
-    }
 }

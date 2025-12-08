@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserMinDTO create(UserDTO dto) {
@@ -38,22 +42,23 @@ public class UserService implements UserDetailsService {
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
         entity.setPhone(dto.getPhone());
-        entity.setPassword(dto.getPassword());
+        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+
         entity.getRoles().clear();
         if (dto.getRoles() == null || dto.getRoles().isEmpty()) {
-            Role defaultRole = roleRepository.findByName("ROLE_USER");
+            Role defaultRole = roleRepository.findByAuthority("ROLE_USER");
             if (defaultRole != null) {
                 entity.getRoles().add(defaultRole);
             }
         } else {
             for (String roleName : dto.getRoles()) {
-                Role role = roleRepository.findByName(roleName);
+                Role role = roleRepository.findByAuthority(roleName);
                 if (role != null) {
                     entity.getRoles().add(role);
                 }
             }
             if (entity.getRoles().isEmpty()) {
-                Role defaultRole = roleRepository.findByName("ROLE_USER");
+                Role defaultRole = roleRepository.findByAuthority("ROLE_USER");
                 if (defaultRole != null) {
                     entity.getRoles().add(defaultRole);
                 }

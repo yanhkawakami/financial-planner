@@ -3,6 +3,14 @@ INSERT INTO tb_category (name) VALUES ('Transporte');
 INSERT INTO tb_category (name) VALUES ('Moradia');
 INSERT INTO tb_category (name) VALUES ('Entretenimento');
 
-INSERT INTO tb_role (name) VALUES ('ROLE_ADMIN');
-INSERT INTO tb_role (name) VALUES ('ROLE_USER');
+INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
+INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
 
+-- Users (senha: 123456)
+INSERT INTO tb_user (name, email, phone, password) VALUES ('Admin', 'admin@email.com', '11999999999', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
+INSERT INTO tb_user (name, email, phone, password) VALUES ('User', 'user@email.com', '11888888888', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
+
+-- User Roles
+INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 1);
