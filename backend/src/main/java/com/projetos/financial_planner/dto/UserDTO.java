@@ -6,6 +6,7 @@ import com.projetos.financial_planner.entities.User;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
+import java.util.Set;
 
 public class UserDTO {
 
@@ -20,11 +21,11 @@ public class UserDTO {
     @NotNull
     private String password;
     private List<Spend> spends;
-    private List<Role> roles;
+    private Set<String> roles;
 
     public UserDTO(){}
 
-    public UserDTO(Long id, String name, String email, String phone, String password, List<Spend> spends, List<Role> roles) {
+    public UserDTO(Long id, String name, String email, String phone, String password, List<Spend> spends, Set<String> roles) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -41,7 +42,14 @@ public class UserDTO {
         phone = entity.getPhone();
         password = entity.getPassword();
         spends = entity.getSpends();
-        roles = entity.getRoles();
+        if (entity.getRoles() == null) {
+            roles = null;
+            return;
+        }
+        roles = new java.util.HashSet<>();
+        for (Role role : entity.getRoles()) {
+            roles.add(role.getName());
+        }
     }
 
     public Long getId() {
@@ -92,11 +100,11 @@ public class UserDTO {
         this.spends = spends;
     }
 
-    public List<Role> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 }

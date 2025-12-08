@@ -47,4 +47,8 @@ public class Category {
     public int hashCode() {
         return Objects.hashCode(name);
     }
+
+    public Category orElseThrow(Object o) {
+        return null;
+    }
 }
