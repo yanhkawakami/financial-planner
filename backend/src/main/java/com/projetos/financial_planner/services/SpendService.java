@@ -9,10 +9,14 @@ import com.projetos.financial_planner.repositories.SpendRepository;
 import com.projetos.financial_planner.repositories.UserRepository;
 import com.projetos.financial_planner.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SpendService {
@@ -25,6 +29,12 @@ public class SpendService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public Page<SpendDTO> getAllSpends(Pageable pageable, Long userId) {
+        Page<Spend> page = repository.findSpendsByUserId(pageable, userId);
+        return page.map(SpendDTO::new);
+    }
 
     @Transactional
     public SpendDTO create(SpendDTO dto) {

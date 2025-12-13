@@ -21,11 +21,7 @@ public class UserController {
     @Autowired
     UserService service;
 
-
-    // TODO: Implementar segurança para criação de usuários, liberando apenas para administradores
-    //       necessita configurar o Spring Security primeiro e criar as collections no Insomnia - A autenticação JWT
-    //       não está funcionando corretamente ainda.
-    // @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> create (@RequestBody UserDTO dto) {
         UserMinDTO minDto = service.create(dto);
