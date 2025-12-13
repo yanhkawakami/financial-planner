@@ -1,0 +1,10 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IntelliJ IDEA project files
+.idea/

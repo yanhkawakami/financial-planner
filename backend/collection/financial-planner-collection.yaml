@@ -1,0 +1,266 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Financial Planner
+meta:
+  id: wrk_bbc145cece17451dad488ae7cc331a68
+  created: 1764547243369
+  modified: 1764547243369
+  description: ""
+collection:
+  - name: User
+    meta:
+      id: fld_7f0867932e4e4215923a81b4c22464f0
+      created: 1764547261887
+      modified: 1764547261887
+      sortKey: -1764547261887
+      description: ""
+    children:
+      - url: http://localhost:8080/users
+        name: Criar novo usuário
+        meta:
+          id: req_022d45daeae547f4ae18073798efefca
+          created: 1764547265918
+          modified: 1765152643805
+          isPrivate: false
+          description: ""
+          sortKey: -1764547268424
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "João Silva",
+              "email": "joo.silva@email.com",
+              "password": "minhasenha123",
+              "phone": "(11) 99999-9999",
+            	"roles": ["ROLE_ADMIN"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Spend
+    meta:
+      id: fld_68339bfdc80147d693edaf56d2c61dea
+      created: 1765152628019
+      modified: 1765152628019
+      sortKey: -1765152628019
+      description: ""
+    children:
+      - url: http://localhost:8080/spends
+        name: Criar nova despesa
+        meta:
+          id: req_389e313ba6e14defa364beba3b3b7670
+          created: 1765152642016
+          modified: 1765582532803
+          isPrivate: false
+          description: ""
+          sortKey: -1765152646313
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "spendDate": "2025-01-15",
+                "spendValue": 150.50,
+                "description": "Compra no supermercado",
+                "categoryId": 1,
+                "userId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/spends/1?size=1
+        name: Recuperar todas as despesas do usuário
+        meta:
+          id: req_c9794c7df6d84cf893ce4ca9f0c068d2
+          created: 1765582579380
+          modified: 1765582959527
+          isPrivate: false
+          description: ""
+          sortKey: -1764849957368.5
+        method: GET
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "spendDate": "2025-01-15",
+                "spendValue": 150.50,
+                "description": "Compra no supermercado",
+                "categoryId": 1,
+                "userId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Auth
+    meta:
+      id: fld_e85530d60d5f4e44b6f6b4918cb3ccf5
+      created: 1765153547217
+      modified: 1765582482841
+      sortKey: -1765153547319
+      description: ""
+    children:
+      - url: http://localhost:8080/oauth2/token
+        name: "Login "
+        meta:
+          id: req_f1f1155f0fca49cf9bd7eb6ad91ad441
+          created: 1765153547218
+          modified: 1765582552288
+          isPrivate: false
+          description: ""
+          sortKey: -1765153547218
+        method: POST
+        body:
+          mimeType: application/x-www-form-urlencoded
+          params:
+            - name: grant_type
+              value: password
+            - name: username
+              value: user@email.com
+            - name: password
+              value: "123456"
+        headers:
+          - name: Content-Type
+            value: application/x-www-form-urlencoded
+          - name: Authorization
+            value: Basic bXljbGllbnRpZDpteWNsaWVudHNlY3JldA==
+            description: ""
+            disabled: false
+        authentication:
+          type: basic
+          useISO88591: false
+          username: myclientid
+          password: myclientsecret
+          disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Users
+    meta:
+      id: fld_aebc3592a6584fb986b4f37dcf3f328c
+      created: 1765153547219
+      modified: 1765153547219
+      sortKey: -1765153547219
+      description: ""
+    children:
+      - url: http://localhost:8080/users
+        name: Get All Users
+        meta:
+          id: req_8318316263484a4a8081f2bc3c3d5c22
+          created: 1765153547219
+          modified: 1765573219907
+          isPrivate: false
+          description: ""
+          sortKey: -1765153547219
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
+              'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/users
+        name: Create User
+        meta:
+          id: req_e5ae45f8a4074b2bb1b4192bc55ab667
+          created: 1765153547220
+          modified: 1765582555234
+          isPrivate: false
+          description: ""
+          sortKey: -1765153547220
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Novo Usuario",
+              "email": "novo@email.com",
+              "phone": "11777777777",
+              "password": "123456",
+              "roles": ["ROLE_USER"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
+              'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_46b8a30bbdc019e2a2c7907d36328c557e76a7a2
+    created: 1764547243371
+    modified: 1765582490085
+  cookies:
+    - id: f2d1c100-ecbd-4622-881c-f0ad441c467c
+      key: JSESSIONID
+      value: 5DC112C14EFAEEBABF6189635BAA7406
+      domain: localhost
+      path: /
+      secure: false
+      httpOnly: true
+      hostOnly: true
+environments:
+  name: Base Environment
+  meta:
+    id: env_46b8a30bbdc019e2a2c7907d36328c557e76a7a2
+    created: 1764547243370
+    modified: 1764547243370
+    isPrivate: false
