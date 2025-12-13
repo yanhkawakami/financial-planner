@@ -31,7 +31,7 @@ public class SpendService {
     UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<SpendDTO> getAllSpends(Pageable pageable, Long userId) {
+    public Page<SpendDTO> getAllSpendsByUserId(Pageable pageable, Long userId) {
         Page<Spend> page = repository.findSpendsByUserId(pageable, userId);
         return page.map(SpendDTO::new);
     }

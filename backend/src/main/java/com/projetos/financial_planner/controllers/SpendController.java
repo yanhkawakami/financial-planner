@@ -27,7 +27,7 @@ public class SpendController {
 
     @GetMapping(value = "/{userId}")
     public ResponseEntity<Page<SpendDTO>> getAllSpendsByUserId(Pageable pageable, @PathVariable Long userId) {
-        Page<SpendDTO> spends = service.getAllSpends(pageable, userId);
+        Page<SpendDTO> spends = service.getAllSpendsByUserId(pageable, userId);
         return ResponseEntity.ok(spends);
     }
 
