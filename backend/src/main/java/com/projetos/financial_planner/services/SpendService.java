@@ -14,12 +14,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class SpendService {
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Autowired
     SpendRepository repository;
@@ -31,7 +32,16 @@ public class SpendService {
     UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<SpendDTO> getAllSpendsByUserId(Pageable pageable, Long userId) {
+    public Page<SpendDTO> getAllSpendsByUserId(Pageable pageable, Long userId, String startDate, String finalDate) {
+        boolean hasDateFilter = isNotEmpty(startDate) || isNotEmpty(finalDate);
+
+        if (hasDateFilter) {
+            LocalDate endDate = parseDate(finalDate, LocalDate.now());
+            LocalDate beginDate = parseDate(startDate, endDate.minusYears(1));
+            Page<Spend> page = repository.findSpendsBetweenStartAndFinalDate(pageable, beginDate, endDate);
+            return page.map(SpendDTO::new);
+        }
+
         Page<Spend> page = repository.findSpendsByUserId(pageable, userId);
         return page.map(SpendDTO::new);
     }
@@ -54,6 +64,14 @@ public class SpendService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + dto.getUserId()));
         entity.setUser(user);
+    }
+
+    private boolean isNotEmpty(String value) {
+        return value != null && !value.isEmpty();
+    }
+
+    private LocalDate parseDate(String dateStr, LocalDate defaultValue) {
+        return isNotEmpty(dateStr) ? LocalDate.parse(dateStr, formatter) : defaultValue;
     }
 
 

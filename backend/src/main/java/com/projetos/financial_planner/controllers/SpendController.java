@@ -26,11 +26,13 @@ public class SpendController {
 
 
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<Page<SpendDTO>> getAllSpendsByUserId(Pageable pageable, @PathVariable Long userId) {
-        Page<SpendDTO> spends = service.getAllSpendsByUserId(pageable, userId);
+    public ResponseEntity<Page<SpendDTO>> getAllSpendsByUserId(Pageable pageable,
+                                                               @PathVariable Long userId,
+                                                               @RequestParam (required = false) String startDate,
+                                                               @RequestParam (required = false) String finalDate) {
+        Page<SpendDTO> spends = service.getAllSpendsByUserId(pageable, userId, startDate, finalDate);
         return ResponseEntity.ok(spends);
     }
-
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping
     public ResponseEntity<?> create (@RequestBody SpendDTO dto) {

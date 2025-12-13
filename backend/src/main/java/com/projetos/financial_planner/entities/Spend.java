@@ -2,7 +2,7 @@ package com.projetos.financial_planner.entities;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "tb_spend")
@@ -11,7 +11,7 @@ public class Spend {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date spendDate;
+    private LocalDate spendDate;
     private Double spendValue;
     private String description;
 
@@ -25,7 +25,7 @@ public class Spend {
 
     public Spend() {}
 
-    public Spend(Long id, Date spendDate, Double spendValue, String description, Category category) {
+    public Spend(Long id, LocalDate spendDate, Double spendValue, String description, Category category) {
         this.id = id;
         this.spendDate = spendDate;
         this.spendValue = spendValue;
@@ -41,12 +41,12 @@ public class Spend {
         this.id = id;
     }
 
-    public Date getSpendDate() {
+    public LocalDate getSpendDate() {
         return spendDate;
     }
 
-    public void setSpendDate(Date spendDate) {
-        this.spendDate = spendDate;
+    public void setSpendDate(LocalDate setSpendDate) {
+        this.spendDate = setSpendDate;
     }
 
     public Double getSpendValue() {

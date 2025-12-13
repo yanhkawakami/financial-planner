@@ -6,12 +6,13 @@ import com.projetos.financial_planner.entities.User;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class SpendDTO {
 
     private Long id;
-    private Date spendDate;
+    private LocalDate spendDate;
     private Double spendValue;
     private String description;
     private Long categoryId;
@@ -19,7 +20,7 @@ public class SpendDTO {
 
     public SpendDTO() {}
 
-    public SpendDTO(Date spendDate, Double spendValue, String description, Long category, Long userId) {
+    public SpendDTO(LocalDate spendDate, Double spendValue, String description, Long category, Long userId) {
         this.spendDate = spendDate;
         this.spendValue = spendValue;
         this.description = description;
@@ -44,11 +45,11 @@ public class SpendDTO {
         this.id = id;
     }
 
-    public Date getSpendDate() {
+    public LocalDate getSpendDate() {
         return spendDate;
     }
 
-    public void setSpendDate(Date spendDate) {
+    public void setSpendDate(LocalDate spendDate) {
         this.spendDate = spendDate;
     }
 
