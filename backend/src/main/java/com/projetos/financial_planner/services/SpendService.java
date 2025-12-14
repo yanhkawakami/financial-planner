@@ -1,6 +1,7 @@
 package com.projetos.financial_planner.services;
 
 import com.projetos.financial_planner.dto.SpendDTO;
+import com.projetos.financial_planner.dto.SpendUpdateDTO;
 import com.projetos.financial_planner.entities.Category;
 import com.projetos.financial_planner.entities.Spend;
 import com.projetos.financial_planner.entities.User;
@@ -43,8 +44,8 @@ public class SpendService {
                     .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + userId));
         }
 
-        LocalDate beginDate = isNotEmpty(startDate) ? parseDate(startDate, null) : null;
-        LocalDate endDate = isNotEmpty(finalDate) ? parseDate(finalDate, null) : null;
+        LocalDate beginDate = parseDate(startDate);
+        LocalDate endDate = parseDate(finalDate);
 
         return repository.findSpends(pageable, userId, beginDate, endDate).map(SpendDTO::new);
     }
@@ -64,11 +65,12 @@ public class SpendService {
     }
 
     @Transactional
-    public SpendDTO update(Long spendId, SpendDTO dto) {
+    public SpendDTO update(Long spendId, SpendUpdateDTO dto) {
         Long userId = userService.authenticated().getId();
-        Spend entity = new Spend();
+        Spend entity = repository.findById(spendId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + spendId));
 
-        if (!Objects.equals(dto.getUserId(), userId)){
+        if (!Objects.equals(entity.getUser().getId(), userId)){
             throw new UnauthorizedOperationException("O usuário " + userId + " não pode atualizar esse gasto, pois não é dele");
         }
 
@@ -78,23 +80,31 @@ public class SpendService {
     }
 
     public void copyDtoToEntity(SpendDTO dto, Spend entity) {
-        entity.setSpendValue(dto.getSpendValue());
-        entity.setDescription(dto.getDescription());
-        entity.setSpendDate(dto.getSpendDate());
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com ID " + dto.getCategoryId()));
-        entity.setCategory(category);
+        copyCommonFields(dto.getSpendValue(), dto.getDescription(), dto.getSpendDate(), dto.getCategoryId(), entity);
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + dto.getUserId()));
         entity.setUser(user);
+    }
+
+    public void copyDtoToEntity(SpendUpdateDTO dto, Spend entity) {
+        copyCommonFields(dto.getSpendValue(), dto.getDescription(), dto.getSpendDate(), dto.getCategoryId(), entity);
+    }
+
+    private void copyCommonFields(Double spendValue, String description, LocalDate spendDate, Long categoryId, Spend entity) {
+        entity.setSpendValue(spendValue);
+        entity.setDescription(description);
+        entity.setSpendDate(spendDate);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com ID " + categoryId));
+        entity.setCategory(category);
     }
 
     private boolean isNotEmpty(String value) {
         return value != null && !value.isEmpty();
     }
 
-    private LocalDate parseDate(String dateStr, LocalDate defaultValue) {
-        return isNotEmpty(dateStr) ? LocalDate.parse(dateStr, formatter) : defaultValue;
+    private LocalDate parseDate(String dateStr) {
+        return isNotEmpty(dateStr) ? LocalDate.parse(dateStr, formatter) : null;
     }
 
 

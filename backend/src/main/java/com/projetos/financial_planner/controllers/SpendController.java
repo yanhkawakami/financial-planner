@@ -2,6 +2,7 @@ package com.projetos.financial_planner.controllers;
 
 
 import com.projetos.financial_planner.dto.SpendDTO;
+import com.projetos.financial_planner.dto.SpendUpdateDTO;
 import com.projetos.financial_planner.dto.UserDTO;
 import com.projetos.financial_planner.dto.UserMinDTO;
 import com.projetos.financial_planner.services.SpendService;
@@ -43,9 +44,9 @@ public class SpendController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PutMapping(value = "/{spendId}")
-    public ResponseEntity<SpendDTO> update (@RequestParam Long spendId, @RequestBody SpendDTO dto) {
-        dto = service.update(spendId, dto);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<SpendDTO> update (@PathVariable Long spendId, @RequestBody SpendUpdateDTO dto) {
+        SpendDTO returnDto = service.update(spendId, dto);
+        return ResponseEntity.ok(returnDto);
     }
 
 }

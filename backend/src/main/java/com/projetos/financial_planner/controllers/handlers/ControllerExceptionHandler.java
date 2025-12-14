@@ -2,6 +2,7 @@ package com.projetos.financial_planner.controllers.handlers;
 
 import com.projetos.financial_planner.dto.CustomErrorDTO;
 import com.projetos.financial_planner.services.exceptions.ResourceNotFoundException;
+import com.projetos.financial_planner.services.exceptions.UnauthorizedOperationException;
 import com.projetos.financial_planner.services.exceptions.UserAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -27,5 +28,13 @@ public class ControllerExceptionHandler {
         CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(UnauthorizedOperationException.class)
+    public ResponseEntity<CustomErrorDTO> unauthorizedOperation(UnauthorizedOperationException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
 
 }
