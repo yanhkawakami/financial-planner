@@ -8,10 +8,13 @@ import com.projetos.financial_planner.repositories.RoleRepository;
 import com.projetos.financial_planner.repositories.UserRepository;
 import com.projetos.financial_planner.services.exceptions.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,5 +76,26 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("Usuário não encontrado: " + username);
         }
         return (UserDetails) user;
+    }
+
+    protected User authenticated() {
+        try {
+            // Busca o objeto authentication no contexto
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            // Extrai o authentication object e transforma em JWT com o CAST
+            Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
+            // Faz a recuperação do valor username
+            String username = jwtPrincipal.getClaim("username");
+            return repository.findByEmail(username);
+
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("User not found");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getMe() {
+        User user = authenticated();
+        return new UserDTO(user);
     }
 }

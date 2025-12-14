@@ -31,20 +31,27 @@ public class SpendService {
     @Autowired
     UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public Page<SpendDTO> getAllSpendsByUserId(Pageable pageable, Long userId, String startDate, String finalDate) {
-        boolean hasDateFilter = isNotEmpty(startDate) || isNotEmpty(finalDate);
+    @Autowired
+    UserService userService;
 
-        if (hasDateFilter) {
-            LocalDate endDate = parseDate(finalDate, LocalDate.now());
-            LocalDate beginDate = parseDate(startDate, endDate.minusYears(1));
-            Page<Spend> page = repository.findSpendsBetweenStartAndFinalDate(pageable, beginDate, endDate);
-            return page.map(SpendDTO::new);
+    @Transactional(readOnly = true)
+    public Page<SpendDTO> getSpends(Pageable pageable, String startDate, String finalDate, Long userId) {
+        if (userId != null) {
+            userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + userId));
         }
 
-        Page<Spend> page = repository.findSpendsByUserId(pageable, userId);
-        return page.map(SpendDTO::new);
+        LocalDate beginDate = isNotEmpty(startDate) ? parseDate(startDate, null) : null;
+        LocalDate endDate = isNotEmpty(finalDate) ? parseDate(finalDate, null) : null;
+
+        return repository.findSpends(pageable, userId, beginDate, endDate).map(SpendDTO::new);
     }
+
+    @Transactional(readOnly = true)
+    public Page<SpendDTO> getAuthenticatedUserSpends(Pageable pageable, String startDate, String finalDate) {
+        return getSpends(pageable, startDate, finalDate, userService.authenticated().getId());
+    }
+
 
     @Transactional
     public SpendDTO create(SpendDTO dto) {

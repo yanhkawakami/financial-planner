@@ -107,4 +107,13 @@ public class User implements UserDetails {
     public int hashCode() {
         return Objects.hashCode(email);
     }
+
+    public boolean hasRole(String roleName) {
+        for (Role role : roles) {
+            if (role.getAuthority().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
