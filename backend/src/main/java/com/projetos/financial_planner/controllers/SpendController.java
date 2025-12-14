@@ -40,4 +40,12 @@ public class SpendController {
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PutMapping(value = "/{spendId}")
+    public ResponseEntity<SpendDTO> update (@RequestParam Long spendId, @RequestBody SpendDTO dto) {
+        dto = service.update(spendId, dto);
+        return ResponseEntity.ok(dto);
+    }
+
 }

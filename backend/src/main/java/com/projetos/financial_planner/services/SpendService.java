@@ -8,6 +8,7 @@ import com.projetos.financial_planner.repositories.CategoryRepository;
 import com.projetos.financial_planner.repositories.SpendRepository;
 import com.projetos.financial_planner.repositories.UserRepository;
 import com.projetos.financial_planner.services.exceptions.ResourceNotFoundException;
+import com.projetos.financial_planner.services.exceptions.UnauthorizedOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 @Service
 public class SpendService {
@@ -56,6 +58,20 @@ public class SpendService {
     @Transactional
     public SpendDTO create(SpendDTO dto) {
         Spend entity = new Spend();
+        copyDtoToEntity(dto, entity);
+        entity = repository.save(entity);
+        return new SpendDTO(entity);
+    }
+
+    @Transactional
+    public SpendDTO update(Long spendId, SpendDTO dto) {
+        Long userId = userService.authenticated().getId();
+        Spend entity = new Spend();
+
+        if (!Objects.equals(dto.getUserId(), userId)){
+            throw new UnauthorizedOperationException("O usuário " + userId + " não pode atualizar esse gasto, pois não é dele");
+        }
+
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new SpendDTO(entity);
