@@ -33,7 +33,7 @@ collection:
               "email": "joo.silva@email.com",
               "password": "minhasenha123",
               "phone": "(11) 99999-9999",
-            	"roles": ["ROLE_ADMIN"]
+              "roles": ["ROLE_ADMIN"]
             }
         headers:
           - name: Content-Type
@@ -52,7 +52,7 @@ collection:
     meta:
       id: fld_68339bfdc80147d693edaf56d2c61dea
       created: 1765152628019
-      modified: 1765152628019
+      modified: 1765673714799
       sortKey: -1765152628019
       description: ""
     children:
@@ -61,7 +61,7 @@ collection:
         meta:
           id: req_389e313ba6e14defa364beba3b3b7670
           created: 1765152642016
-          modified: 1765582532803
+          modified: 1765674074678
           isPrivate: false
           description: ""
           sortKey: -1765152646313
@@ -74,7 +74,7 @@ collection:
                 "spendValue": 150.50,
                 "description": "Compra no supermercado",
                 "categoryId": 1,
-                "userId": 1
+                "userId": 2
             }
         headers:
           - name: Content-Type
@@ -83,8 +83,7 @@ collection:
             value: insomnia/12.0.0
         authentication:
           type: bearer
-          token: "{% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
-            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+          token: "BEARER_TOKEN_FIXME"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -93,12 +92,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/spends/1?size=1
+      - url: http://localhost:8080/spends
         name: Recuperar todas as despesas do usuário
         meta:
           id: req_c9794c7df6d84cf893ce4ca9f0c068d2
           created: 1765582579380
-          modified: 1765582959527
+          modified: 1765744394532
           isPrivate: false
           description: ""
           sortKey: -1764849957368.5
@@ -113,6 +112,11 @@ collection:
                 "categoryId": 1,
                 "userId": 1
             }
+        parameters:
+          - name: startDate
+            value: "2025-01-15"
+            description: ""
+            disabled: false
         headers:
           - name: Content-Type
             value: application/json
@@ -120,8 +124,7 @@ collection:
             value: insomnia/12.0.0
         authentication:
           type: bearer
-          token: "{% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
-            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+          token: "BEARER_TOKEN_FIXME"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -130,6 +133,89 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: http://localhost:8080/spends/3
+        name: Atualizar despesa
+        meta:
+          id: req_c0e0aec3d0844e928afbbb8afe8790f9
+          created: 1765744384082
+          modified: 1765744593293
+          isPrivate: false
+          description: ""
+          sortKey: -1765001301840.75
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "spendDate": "2025-01-15",
+                "spendValue": 15.50,
+                "description": "Compra no supermercado",
+                "categoryId": 1,
+                "userId": 2
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.0.0
+        authentication:
+          type: bearer
+          token: "BEARER_TOKEN_FIXME"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Admin
+        meta:
+          id: fld_d34463f1594b40b4a35c07aca2ff9cb2
+          created: 1765673711799
+          modified: 1765744347644
+          sortKey: -1765152646413
+          description: ""
+        children:
+          - url: http://localhost:8080/admin/spends
+            name: Recuperar todas as despesas (ADMIN)
+            meta:
+              id: req_43dc39e15f624e57a1c2d2f69c5af6eb
+              created: 1765673725321
+              modified: 1765673996577
+              isPrivate: false
+              description: ""
+              sortKey: -1765673730434
+            method: GET
+            parameters:
+              - name: userId
+                value: "1"
+                description: ""
+                disabled: false
+              - name: startDate
+                value: "2025-01-15"
+                description: ""
+                disabled: false
+              - name: finalDate
+                value: "2025-01-13"
+                description: ""
+                disabled: false
+            headers:
+              - name: User-Agent
+                value: insomnia/12.1.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: "BEARER_TOKEN_FIXME"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
   - name: Auth
     meta:
       id: fld_e85530d60d5f4e44b6f6b4918cb3ccf5
@@ -143,7 +229,7 @@ collection:
         meta:
           id: req_f1f1155f0fca49cf9bd7eb6ad91ad441
           created: 1765153547218
-          modified: 1765582552288
+          modified: 1765745145673
           isPrivate: false
           description: ""
           sortKey: -1765153547218
@@ -154,7 +240,7 @@ collection:
             - name: grant_type
               value: password
             - name: username
-              value: user@email.com
+              value: admin@email.com
             - name: password
               value: "123456"
         headers:
@@ -198,8 +284,7 @@ collection:
         method: GET
         headers:
           - name: Authorization
-            value: Bearer {% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
-              'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}
+            value: "BEARER_TOKEN_FIXME"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -232,8 +317,7 @@ collection:
           - name: Content-Type
             value: application/json
           - name: Authorization
-            value: Bearer {% response 'body', 'req_f1f1155f0fca49cf9bd7eb6ad91ad441',
-              'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}
+            value: "BEARER_TOKEN_FIXME"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -247,20 +331,11 @@ cookieJar:
   meta:
     id: jar_46b8a30bbdc019e2a2c7907d36328c557e76a7a2
     created: 1764547243371
-    modified: 1765582490085
-  cookies:
-    - id: f2d1c100-ecbd-4622-881c-f0ad441c467c
-      key: JSESSIONID
-      value: 5DC112C14EFAEEBABF6189635BAA7406
-      domain: localhost
-      path: /
-      secure: false
-      httpOnly: true
-      hostOnly: true
+    modified: 1765673762159
 environments:
   name: Base Environment
   meta:
     id: env_46b8a30bbdc019e2a2c7907d36328c557e76a7a2
     created: 1764547243370
-    modified: 1764547243370
+    modified: 1765830806440
     isPrivate: false

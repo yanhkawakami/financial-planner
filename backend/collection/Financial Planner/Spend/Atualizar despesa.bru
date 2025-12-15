@@ -1,0 +1,31 @@
+meta {
+  name: Atualizar despesa
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:8080/spends/3
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.0.0
+}
+
+body:json {
+  {
+      "spendDate": "2025-01-15",
+      "spendValue": 15.50,
+      "description": "Compra no supermercado",
+      "categoryId": 1,
+      "userId": 2
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

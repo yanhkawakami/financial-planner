@@ -3,6 +3,7 @@ package com.projetos.financial_planner.services;
 import com.projetos.financial_planner.dto.SpendDTO;
 import com.projetos.financial_planner.dto.SpendUpdateDTO;
 import com.projetos.financial_planner.entities.Category;
+import com.projetos.financial_planner.entities.Role;
 import com.projetos.financial_planner.entities.Spend;
 import com.projetos.financial_planner.entities.User;
 import com.projetos.financial_planner.repositories.CategoryRepository;
@@ -52,7 +53,13 @@ public class SpendService {
 
     @Transactional(readOnly = true)
     public Page<SpendDTO> getAuthenticatedUserSpends(Pageable pageable, String startDate, String finalDate) {
-        return getSpends(pageable, startDate, finalDate, userService.authenticated().getId());
+        for  (Role role : userService.authenticated().getRoles()){
+            if (role.getAuthority().equals("ROLE_ADMIN")) {
+                return getSpends(pageable, startDate, finalDate, null);
+            }
+        }
+        Long userId = userService.authenticated().getId();
+        return getSpends(pageable, startDate, finalDate, userId);
     }
 
 

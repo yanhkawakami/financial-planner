@@ -1,0 +1,21 @@
+meta {
+  name: Recuperar todas as despesas do usuário
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/spends
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.0.0
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

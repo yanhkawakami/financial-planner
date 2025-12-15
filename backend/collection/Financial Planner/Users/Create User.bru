@@ -1,0 +1,30 @@
+meta {
+  name: Create User
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/users
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: BEARER_TOKEN_FIXME
+}
+
+body:json {
+  {
+    "name": "Novo Usuario",
+    "email": "novo@email.com",
+    "phone": "11777777777",
+    "password": "123456",
+    "roles": ["ROLE_USER"]
+  }
+}
+
+settings {
+  encodeUrl: true
+}
