@@ -116,4 +116,8 @@ public class User implements UserDetails {
         }
         return false;
     }
+
+    public boolean isAdmin() {
+        return hasRole("ROLE_ADMIN");
+    }
 }

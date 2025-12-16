@@ -40,16 +40,10 @@ public class SpendService {
 
     @Transactional(readOnly = true)
     public Page<SpendDTO> getSpends(Pageable pageable, Long userId, String startDate, String finalDate) {
-        boolean flag_admin = false;
+        User user = userService.authenticated();
 
-        for  (Role role : userService.authenticated().getRoles()){
-            if (role.getAuthority().equals("ROLE_ADMIN")) {
-                flag_admin = true;
-                break;
-            }
-        }
         if (userId != null){
-            if (!flag_admin){
+            if (!user.isAdmin()){
                 Long finalUserId = userId;
                 userRepository.findById(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + finalUserId));
@@ -58,7 +52,7 @@ public class SpendService {
                 }
             }
         } else {
-            if (!flag_admin){
+            if (!user.isAdmin()){
                 userId = userService.authenticated().getId();
             }
         }

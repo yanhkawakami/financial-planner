@@ -34,6 +34,7 @@ public class UserService implements UserDetailsService {
     public UserMinDTO create(UserDTO dto) {
         User entity = new User();
         copyDtoToEntity(dto, entity);
+        // TODO: Substituir por um constraint validation (criar a anotação UserInsert)
         if(repository.findByEmail(entity.getEmail()) != null){
             throw new UserAlreadyExistsException("Usuário já existente com esse e-mail");
         }
