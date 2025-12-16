@@ -39,27 +39,34 @@ public class SpendService {
     UserService userService;
 
     @Transactional(readOnly = true)
-    public Page<SpendDTO> getSpends(Pageable pageable, String startDate, String finalDate, Long userId) {
-        if (userId != null) {
-            userRepository.findById(userId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + userId));
+    public Page<SpendDTO> getSpends(Pageable pageable, Long userId, String startDate, String finalDate) {
+        boolean flag_admin = false;
+
+        for  (Role role : userService.authenticated().getRoles()){
+            if (role.getAuthority().equals("ROLE_ADMIN")) {
+                flag_admin = true;
+                break;
+            }
+        }
+        if (userId != null){
+            if (!flag_admin){
+                Long finalUserId = userId;
+                userRepository.findById(userId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + finalUserId));
+                if (!Objects.equals(userService.authenticated().getId(), userId)){
+                    throw new UnauthorizedOperationException("O usuário " + userId + " não pode visualizar esse gasto, pois não é dele");
+                }
+            }
+        } else {
+            if (!flag_admin){
+                userId = userService.authenticated().getId();
+            }
         }
 
         LocalDate beginDate = parseDate(startDate);
         LocalDate endDate = parseDate(finalDate);
 
         return repository.findSpends(pageable, userId, beginDate, endDate).map(SpendDTO::new);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<SpendDTO> getAuthenticatedUserSpends(Pageable pageable, String startDate, String finalDate) {
-        for  (Role role : userService.authenticated().getRoles()){
-            if (role.getAuthority().equals("ROLE_ADMIN")) {
-                return getSpends(pageable, startDate, finalDate, null);
-            }
-        }
-        Long userId = userService.authenticated().getId();
-        return getSpends(pageable, startDate, finalDate, userId);
     }
 
 
