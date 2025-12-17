@@ -1,11 +1,11 @@
 meta {
-  name: Create User
+  name: Update User
   type: http
-  seq: 2
+  seq: 3
 }
 
-post {
-  url: http://localhost:8080/users
+put {
+  url: http://localhost:8080/users/3
   body: json
   auth: inherit
 }
@@ -18,7 +18,7 @@ headers {
 body:json {
   {
     "name": "Novo Usuario",
-    "email": "novo@email.com",
+    "email": "noo@email.com",
     "phone": "11777777777",
     "password": "123456",
     "roles": ["ROLE_USER"]

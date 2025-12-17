@@ -8,6 +8,8 @@ import com.projetos.financial_planner.repositories.RoleRepository;
 import com.projetos.financial_planner.repositories.UserRepository;
 import com.projetos.financial_planner.services.exceptions.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,6 +32,13 @@ public class UserService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
+    public Page<UserMinDTO> getUsers(Pageable pageable){
+        Page<User> page = repository.findAll(pageable);
+        return page.map(UserMinDTO::new);
+    }
+
+
     @Transactional
     public UserMinDTO create(UserDTO dto) {
         User entity = new User();
@@ -38,6 +47,14 @@ public class UserService implements UserDetailsService {
         if(repository.findByEmail(entity.getEmail()) != null){
             throw new UserAlreadyExistsException("Usuário já existente com esse e-mail");
         }
+        repository.save(entity);
+        return new UserMinDTO(entity);
+    }
+
+    @Transactional
+    public UserMinDTO update(Long id, UserDTO dto) {
+        User entity = repository.getReferenceById(id);
+        copyDtoToEntity(dto, entity);
         repository.save(entity);
         return new UserMinDTO(entity);
     }
