@@ -1,0 +1,16 @@
+meta {
+  name: Deletar Categoria
+  type: http
+  seq: 4
+}
+
+delete {
+  url: http://localhost:8080/categories/5
+  body: json
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

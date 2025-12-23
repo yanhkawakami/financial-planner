@@ -30,8 +30,9 @@ public class SpendController {
     public ResponseEntity<Page<SpendDTO>> getSpends(Pageable pageable,
                                                       @RequestParam(required = false) Long userId,
                                                       @RequestParam(required = false) String startDate,
-                                                      @RequestParam(required = false) String finalDate) {
-        return ResponseEntity.ok(service.getSpends(pageable, userId, startDate, finalDate));
+                                                      @RequestParam(required = false) String finalDate,
+                                                      @RequestParam(required = false) Long categoryId) {
+        return ResponseEntity.ok(service.getSpends(pageable, userId, startDate, finalDate, categoryId));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
@@ -48,6 +49,13 @@ public class SpendController {
     public ResponseEntity<SpendDTO> update (@PathVariable Long spendId, @RequestBody SpendUpdateDTO dto) {
         SpendDTO returnDto = service.update(spendId, dto);
         return ResponseEntity.ok(returnDto);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @DeleteMapping(value = "/{spendId}")
+    public ResponseEntity<Void> delete (@PathVariable Long spendId) {
+        service.delete(spendId);
+        return ResponseEntity.noContent().build();
     }
 
 }

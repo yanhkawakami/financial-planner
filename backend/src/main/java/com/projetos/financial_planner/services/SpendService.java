@@ -39,7 +39,7 @@ public class SpendService {
     UserService userService;
 
     @Transactional(readOnly = true)
-    public Page<SpendDTO> getSpends(Pageable pageable, Long userId, String startDate, String finalDate) {
+    public Page<SpendDTO> getSpends(Pageable pageable, Long userId, String startDate, String finalDate, Long categoryId) {
         User user = userService.authenticated();
 
         if (userId != null){
@@ -60,13 +60,21 @@ public class SpendService {
         LocalDate beginDate = parseDate(startDate);
         LocalDate endDate = parseDate(finalDate);
 
-        return repository.findSpends(pageable, userId, beginDate, endDate).map(SpendDTO::new);
+        return repository.findSpends(pageable, userId, beginDate, endDate, categoryId).map(SpendDTO::new);
     }
 
 
     @Transactional
     public SpendDTO create(SpendDTO dto) {
         Spend entity = new Spend();
+
+        if (!userService.authenticated().isAdmin()){
+            Long authenticatedUserId = userService.authenticated().getId();
+            if (!Objects.equals(dto.getUserId(), authenticatedUserId)){
+                throw new UnauthorizedOperationException("O usuário " + authenticatedUserId + " não pode criar um gasto para o usuário " + dto.getUserId());
+            }
+        }
+
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new SpendDTO(entity);
@@ -78,13 +86,32 @@ public class SpendService {
         Spend entity = repository.findById(spendId)
                 .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + spendId));
 
-        if (!Objects.equals(entity.getUser().getId(), userId)){
-            throw new UnauthorizedOperationException("O usuário " + userId + " não pode atualizar esse gasto, pois não é dele");
+        if (!userService.authenticated().isAdmin() ) {
+            userId = userService.authenticated().getId();
+            if (!Objects.equals(entity.getUser().getId(), userId)) {
+                throw new UnauthorizedOperationException("O usuário " + userId + " não pode atualizar esse gasto, pois não é dele");
+            }
         }
 
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new SpendDTO(entity);
+    }
+
+    @Transactional
+    public void delete(Long spendId) {
+        Long userId = userService.authenticated().getId();
+        Spend entity = repository.findById(spendId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + spendId));
+
+        if (!userService.authenticated().isAdmin() ) {
+            userId = userService.authenticated().getId();
+            if (!Objects.equals(entity.getUser().getId(), userId)) {
+                throw new UnauthorizedOperationException("O usuário " + userId + " não pode deletar esse gasto, pois não é dele");
+            }
+        }
+
+        repository.deleteById(spendId);
     }
 
     public void copyDtoToEntity(SpendDTO dto, Spend entity) {
