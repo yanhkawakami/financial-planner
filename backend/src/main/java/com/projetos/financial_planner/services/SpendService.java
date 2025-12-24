@@ -63,6 +63,22 @@ public class SpendService {
         return repository.findSpends(pageable, userId, beginDate, endDate, categoryId).map(SpendDTO::new);
     }
 
+    @Transactional(readOnly = true)
+    public SpendDTO getSpendById(Long spendId) {
+        Long userId = userService.authenticated().getId();
+        Spend entity = repository.findById(spendId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + spendId));
+
+        if (!userService.authenticated().isAdmin() ) {
+            userId = userService.authenticated().getId();
+            if (!Objects.equals(entity.getUser().getId(), userId)) {
+                throw new UnauthorizedOperationException("O usuário " + userId + " não pode visualizar esse gasto, pois não é dele");
+            }
+        }
+
+        return new SpendDTO(entity);
+    }
+
 
     @Transactional
     public SpendDTO create(SpendDTO dto) {

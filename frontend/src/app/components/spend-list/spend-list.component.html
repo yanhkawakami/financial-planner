@@ -1,0 +1,81 @@
+<div class="container">
+  <div class="header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Gerenciamento de Despesas</h1>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <span *ngIf="currentUser" style="color: #666;">
+          Olá, {{ currentUser.username }}!
+        </span>
+        <button (click)="logout()" class="btn btn-secondary">
+          Sair
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2>Lista de Despesas</h2>
+      <a routerLink="/spends/new" class="btn btn-primary">+ Nova Despesa</a>
+    </div>
+
+    <div *ngIf="error" style="padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 4px; margin-bottom: 20px;">
+      {{ error }}
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      Carregando...
+    </div>
+
+    <div *ngIf="!loading && spends.length === 0" class="empty-state">
+      <p>Nenhuma despesa encontrada.</p>
+      <a routerLink="/spends/new" class="btn btn-primary">Criar primeira despesa</a>
+    </div>
+
+    <div *ngIf="!loading && spends.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let spend of spends">
+            <td>{{ spend.id }}</td>
+            <td>{{ spend.spendDate | date: 'dd/MM/yyyy' }}</td>
+            <td>R$ {{ spend.spendValue | number: '1.2-2' }}</td>
+            <td>{{ spend.description }}</td>
+            <td>{{ spend.categoryId }}</td>
+            <td>
+              <a [routerLink]="['/spends/edit', spend.id]" class="btn btn-secondary" style="margin-right: 5px;">
+                Editar
+              </a>
+              <button (click)="deleteSpend(spend.id)" class="btn btn-danger">
+                Excluir
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button (click)="previousPage()" [disabled]="currentPage === 0">
+          Anterior
+        </button>
+        <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
+          Próxima
+        </button>
+      </div>
+
+      <div style="text-align: center; margin-top: 10px; color: #666;">
+        Total de {{ totalElements }} despesa(s)
+      </div>
+    </div>
+  </div>
+</div>

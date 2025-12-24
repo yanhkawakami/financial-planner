@@ -163,7 +163,7 @@ public class AuthorizationServerConfig {
 		return new DelegatingOAuth2TokenGenerator(jwtGenerator, accessTokenGenerator);
 	}
 
-    // Essa função customiza o ‘token’, colocando as reivindicações necessárias
+    // Essa função customiza o 'token', colocando as reivindicações necessárias
 	@Bean
 	public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
 		return context -> {
@@ -176,7 +176,8 @@ public class AuthorizationServerConfig {
                 // necessidade da aplicação
 				context.getClaims()
 					.claim("authorities", authorities)
-					.claim("username", user.getUsername());
+					.claim("username", user.getUsername())
+					.claim("userId", user.getUserId());
 				// @formatter:on
 			}
 		};

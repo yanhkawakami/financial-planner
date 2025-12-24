@@ -1,5 +1,6 @@
 package com.projetos.financial_planner.config.customgrant;
 
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
@@ -84,7 +85,10 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 		
 		//-----------Create a new Security Context Holder Context----------
 		OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-		CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(username, user.getAuthorities());
+
+		// Extrair o userId do objeto User usando reflexão
+		Long userId = getUserId(user);
+		CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(userId, username, user.getAuthorities());
 		oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
 		
 		var newcontext = SecurityContextHolder.createEmptyContext();
@@ -134,6 +138,18 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return CustomPasswordAuthenticationToken.class.isAssignableFrom(authentication);
+	}
+
+	/**
+	 * Extrai o ID do usuário usando reflexão para evitar dependência direta da entidade User
+	 */
+	private Long getUserId(UserDetails userDetails) {
+		try {
+			Method getIdMethod = userDetails.getClass().getMethod("getId");
+			return (Long) getIdMethod.invoke(userDetails);
+		} catch (Exception e) {
+			throw new OAuth2AuthenticationException("Unable to extract user ID from UserDetails");
+		}
 	}
 
 	private static OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(Authentication authentication) {

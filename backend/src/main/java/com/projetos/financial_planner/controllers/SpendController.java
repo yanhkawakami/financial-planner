@@ -35,6 +35,12 @@ public class SpendController {
         return ResponseEntity.ok(service.getSpends(pageable, userId, startDate, finalDate, categoryId));
     }
 
+    @GetMapping (value = "/{spendId}")
+    public ResponseEntity<SpendDTO> getSpendById(@PathVariable Long spendId) {
+        SpendDTO dto = service.getSpendById(spendId);
+        return ResponseEntity.ok(dto);
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping
     public ResponseEntity<?> create (@RequestBody SpendDTO dto) {
