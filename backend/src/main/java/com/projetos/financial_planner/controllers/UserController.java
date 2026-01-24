@@ -2,6 +2,7 @@ package com.projetos.financial_planner.controllers;
 
 import com.projetos.financial_planner.dto.UserDTO;
 import com.projetos.financial_planner.dto.UserMinDTO;
+import com.projetos.financial_planner.dto.UserProfileDTO;
 import com.projetos.financial_planner.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,12 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserMinDTO>> getUsers(Pageable pageable) {
         return ResponseEntity.ok().body(service.getUsers(pageable));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<UserProfileDTO> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(service.getUserById(id));
     }
 
     @PostMapping

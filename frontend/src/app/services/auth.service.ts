@@ -3,12 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { LoginRequest, AuthResponse, User, TokenPayload } from '../models/auth.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = environment.apiUrl;
   private tokenKey = 'financial_planner_token';
   private userKey = 'financial_planner_user';
   
@@ -36,7 +37,7 @@ export class AuthService {
         tap((response: AuthResponse) => {
           console.log('🔐 Token recebido do servidor:', response);
           this.setTokens(response);
-          this.loadUserFromToken(response.access_token);
+          this.loadUserFromToken(response.access_token, credentials.username);
         }),
         catchError((error) => {
           console.error('Erro no login:', error);
@@ -57,23 +58,12 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     const token = this.getToken();
-    console.log('🔍 Verificando se está logado...');
-    console.log('🔍 Token encontrado:', token ? 'SIM' : 'NÃO');
-    
-    if (!token) {
-      console.log('❌ Nenhum token encontrado');
-      return false;
-    }
+    if (!token) return false;
     
     try {
       const payload = this.parseJWT(token);
-      const isValid = payload.exp > Date.now() / 1000;
-      console.log('🔍 Token válido:', isValid);
-      console.log('🔍 Token expira em:', new Date(payload.exp * 1000));
-      console.log('🔍 Data atual:', new Date());
-      return isValid;
+      return payload.exp > Date.now() / 1000;
     } catch (error) {
-      console.log('❌ Erro ao validar token:', error);
       return false;
     }
   }
@@ -85,7 +75,16 @@ export class AuthService {
   getCurrentUserId(): number | null {
     const user = this.getCurrentUser();
     const userId = user ? user.id : null;
-    console.log('🔍 getCurrentUserId() retornando:', userId);
+    
+    if (!userId || userId === 0) {
+      const token = this.getToken();
+      if (token) {
+        this.loadUserFromStorage();
+        const reloadedUser = this.getCurrentUser();
+        return reloadedUser ? reloadedUser.id : null;
+      }
+    }
+    
     return userId;
   }
 
@@ -99,34 +98,46 @@ export class AuthService {
   }
 
   private loadUserFromStorage(): void {
-    console.log('🔍 Carregando usuário do localStorage...');
     const token = this.getToken();
-    console.log('🔍 Token do localStorage:', token ? 'EXISTE' : 'NÃO EXISTE');
     
     if (token && this.isLoggedIn()) {
-      console.log('✅ Token válido encontrado - carregando usuário');
-      this.loadUserFromToken(token);
+      
+      let storedUsername: string | undefined;
+      const storedUserJson = localStorage.getItem(this.userKey);
+      if (storedUserJson) {
+        try {
+          const storedUser = JSON.parse(storedUserJson);
+          storedUsername = storedUser.username;
+        } catch (e) {
+          console.warn('Erro ao ler usuário armazenado', e);
+        }
+      }
+
+      this.loadUserFromToken(token, storedUsername);
     } else {
       console.log('❌ Nenhum token válido encontrado');
     }
   }
 
-  private loadUserFromToken(token: string): void {
+  private loadUserFromToken(token: string, fallbackUsername?: string): void {
     try {
       const payload = this.parseJWT(token);
-      console.log('🔍 Payload completo do JWT:', payload);
-      
-      // Tentar diferentes campos possíveis para user ID
       const userId = payload.user_id || payload.userId || payload.uid || payload.id || payload.sub;
-      console.log('🆔 User ID extraído:', userId);
       
+      // Tentar encontrar o nome do usuário em outros campos comuns do JWT
+      // Prioriza o nome real (name, given_name) se existir no token
+      // Se não, tenta o username/email do login (fallbackUsername)
+      // Por fim, tenta encontrar no token (username, user_name, sub)
+      const username = payload.name || fallbackUsername || payload.username || 'user';
+
+      const email = payload.username && payload.username.includes('@') ? payload.username : undefined;
+
       const user: User = {
         id: typeof userId === 'string' ? parseInt(userId) : userId || 1,
-        username: payload.sub,
+        username: username,
         roles: payload.authorities || payload.roles || []
       };
       
-      console.log('👤 Usuário criado:', user);
       localStorage.setItem(this.userKey, JSON.stringify(user));
       this.currentUserSubject.next(user);
     } catch (error) {
@@ -149,5 +160,50 @@ export class AuthService {
     } catch (error) {
       throw new Error('Token inválido');
     }
+  }
+
+  recoverToken(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/recover-token`, { email });
+  }
+
+  resetPassword(password: string, token: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/auth/new-password`, { password, token });
+  }
+
+  register(userData: { name: string; email: string; phone: string; password: string }): Observable<any> {
+    const payload = {
+      ...userData,
+      roles: ['ROLE_USER']
+    };
+    return this.http.post(`${this.apiUrl}/users`, payload);
+  }
+
+  getUserProfile(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/${userId}`);
+  }
+
+  updateUserProfile(userId: number, userData: { name: string; phone: string; password?: string }): Observable<any> {
+    const currentUser = this.getCurrentUser();
+    const payload: any = {
+      name: userData.name,
+      phone: userData.phone,
+      roles: currentUser?.roles || ['ROLE_USER']
+    };
+    
+    // Só inclui a senha se foi fornecida
+    if (userData.password && userData.password.trim()) {
+      payload.password = userData.password;
+    }
+    
+    return this.http.put(`${this.apiUrl}/users/${userId}`, payload).pipe(
+      tap(() => {
+        // Atualiza o nome do usuário no localStorage
+        if (currentUser) {
+          currentUser.username = userData.name;
+          localStorage.setItem(this.userKey, JSON.stringify(currentUser));
+          this.currentUserSubject.next(currentUser);
+        }
+      })
+    );
   }
 }

@@ -11,7 +11,7 @@
 
     <form (ngSubmit)="onSubmit()" class="login-form">
       <div class="form-group">
-        <label for="username">Usuário *</label>
+        <label for="username">Usuário (E-mail) *</label>
         <input
           type="text"
           id="username"
@@ -28,15 +28,25 @@
 
       <div class="form-group">
         <label for="password">Senha *</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          [(ngModel)]="credentials.password"
-          placeholder="Digite sua senha"
-          required
-          [disabled]="loading"
-        />
+        <div class="password-input-container">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="credentials.password"
+            placeholder="Digite sua senha"
+            required
+            [disabled]="loading"
+          />
+          <button 
+            type="button" 
+            class="toggle-password-btn" 
+            (click)="togglePasswordVisibility()"
+            tabindex="-1"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
         <div *ngIf="submitted && !credentials.password" class="error-message">
           Senha é obrigatória
         </div>
@@ -50,6 +60,19 @@
         <span *ngIf="loading" class="loading-spinner"></span>
         {{ loading ? 'Entrando...' : 'Entrar' }}
       </button>
+
+      <div class="forgot-password-container">
+        <a routerLink="/forgot-password" class="forgot-password-link">
+          Esqueci minha senha
+        </a>
+      </div>
+
+      <div class="signup-container">
+        <p class="signup-text">Não tem uma conta?</p>
+        <a routerLink="/signup" class="signup-link">
+          Criar conta
+        </a>
+      </div>
     </form>
   </div>
 </div>

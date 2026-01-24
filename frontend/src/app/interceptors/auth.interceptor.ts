@@ -5,9 +5,11 @@ import { AuthService } from '../services/auth.service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   
-  // Não adicionar token para requisições de login
-  if (req.url.includes('/oauth2/token')) {
-    console.log('🔓 Requisição de login - sem token:', req.url);
+  // Não adicionar token para requisições públicas
+  if (req.url.includes('/oauth2/token') || 
+      req.url.includes('/users') && req.method === 'POST' ||
+      req.url.includes('/auth/recover-token') ||
+      req.url.includes('/auth/new-password')) {
     return next(req);
   }
 
@@ -17,10 +19,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authReq = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
-    console.log('🔒 Adicionando token para:', req.url);
     return next(authReq);
   }
 
-  console.log('❌ Sem token válido para:', req.url);
   return next(req);
 };

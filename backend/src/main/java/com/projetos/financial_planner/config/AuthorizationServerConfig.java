@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
+import com.nimbusds.jose.crypto.PasswordBasedDecrypter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -111,6 +112,7 @@ public class AuthorizationServerConfig {
 		return new BCryptPasswordEncoder();
 	}
 
+
     // Registra o nosso cliente. Isso é gerado em memória, não é salvo em nenhum banco de dados. Enquanto
     // o token dele não expirar e a aplicação ficar ativa, o token fica ativo
 	@Bean
@@ -177,7 +179,8 @@ public class AuthorizationServerConfig {
 				context.getClaims()
 					.claim("authorities", authorities)
 					.claim("username", user.getUsername())
-					.claim("userId", user.getUserId());
+					.claim("userId", user.getUserId())
+					.claim("name", user.getName());
 				// @formatter:on
 			}
 		};

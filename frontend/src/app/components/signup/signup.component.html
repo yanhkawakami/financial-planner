@@ -1,0 +1,146 @@
+<div class="signup-container">
+  <div class="signup-card">
+    <div class="signup-header">
+      <h1>Criar Conta</h1>
+      <p>Preencha os dados para se cadastrar</p>
+    </div>
+
+    <div *ngIf="error" class="error-alert">
+      {{ error }}
+    </div>
+
+    <div *ngIf="success" class="success-alert">
+      Conta criada com sucesso! Redirecionando para o login...
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="signup-form" *ngIf="!success">
+      <div class="form-group">
+        <label for="name">Nome Completo *</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          [(ngModel)]="user.name"
+          placeholder="Digite seu nome completo"
+          required
+          [disabled]="loading"
+        />
+        <div *ngIf="submitted && !user.name" class="error-message">
+          Nome é obrigatório
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail *</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="user.email"
+          placeholder="Digite seu e-mail"
+          required
+          [disabled]="loading"
+        />
+        <div *ngIf="submitted && !user.email" class="error-message">
+          E-mail é obrigatório
+        </div>
+        <div *ngIf="submitted && user.email && !isValidEmail(user.email)" class="error-message">
+          E-mail inválido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Telefone *</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          [(ngModel)]="user.phone"
+          placeholder="(11) 98765-4321"
+          required
+          [disabled]="loading"
+        />
+        <div *ngIf="submitted && !user.phone" class="error-message">
+          Telefone é obrigatório
+        </div>
+        <div *ngIf="submitted && user.phone && !isValidPhone(user.phone)" class="error-message">
+          Telefone inválido (mínimo 10 dígitos)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha *</label>
+        <div class="password-input-container">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="user.password"
+            placeholder="Digite sua senha"
+            required
+            [disabled]="loading"
+          />
+          <button 
+            type="button" 
+            class="toggle-password-btn" 
+            (click)="togglePasswordVisibility()"
+            tabindex="-1"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="submitted && !user.password" class="error-message">
+          Senha é obrigatória
+        </div>
+        <div *ngIf="submitted && user.password && user.password.length < 6" class="error-message">
+          A senha deve ter no mínimo 6 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar Senha *</label>
+        <div class="password-input-container">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            placeholder="Confirme sua senha"
+            required
+            [disabled]="loading"
+          />
+          <button 
+            type="button" 
+            class="toggle-password-btn" 
+            (click)="toggleConfirmPasswordVisibility()"
+            tabindex="-1"
+          >
+            {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="submitted && !confirmPassword" class="error-message">
+          Confirmação de senha é obrigatória
+        </div>
+        <div *ngIf="submitted && confirmPassword && !passwordsMatch()" class="error-message">
+          As senhas não coincidem
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="signup-btn" 
+        [disabled]="loading"
+      >
+        <span *ngIf="loading" class="loading-spinner"></span>
+        {{ loading ? 'Criando conta...' : 'Criar Conta' }}
+      </button>
+
+      <div class="login-link-container">
+        <p class="login-text">Já tem uma conta?</p>
+        <a routerLink="/login" class="login-link">
+          Fazer login
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

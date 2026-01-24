@@ -3,6 +3,15 @@
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h1>Gerenciamento de Despesas</h1>
       <div style="display: flex; align-items: center; gap: 15px;">
+        <a routerLink="/spends/quarterly" class="btn btn-secondary">
+          Últimos 3 Meses
+        </a>
+        <a routerLink="/spends/monthly" class="btn btn-secondary">
+          Resumo Mensal
+        </a>
+        <a routerLink="/profile" class="btn btn-secondary">
+          Meu Perfil
+        </a>
         <span *ngIf="currentUser" style="color: #666;">
           Olá, {{ currentUser.username }}!
         </span>
@@ -17,6 +26,68 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <h2>Lista de Despesas</h2>
       <a routerLink="/spends/new" class="btn btn-primary">+ Nova Despesa</a>
+    </div>
+
+    <!-- Filtros e Ordenação -->
+    <div class="filters-container">
+      <div class="filter-group">
+        <label for="categoryFilter">Filtrar por Categoria:</label>
+        <select 
+          id="categoryFilter" 
+          [(ngModel)]="selectedCategoryId" 
+          (change)="onFilterChange()"
+          class="filter-select"
+        >
+          <option [value]="null">Todas as categorias</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <button 
+          *ngIf="selectedCategoryId" 
+          (click)="clearFilter()" 
+          class="btn-clear-filter"
+        >
+          Limpar filtro
+        </button>
+      </div>
+
+      <div class="filter-group">
+        <label for="sortBy">Ordenar por:</label>
+        <select 
+          id="sortBy" 
+          [(ngModel)]="sortBy" 
+          (change)="onSortChange()"
+          class="filter-select"
+        >
+          <option value="date">Data</option>
+          <option value="value">Valor</option>
+          <option value="category">Categoria</option>
+        </select>
+        
+        <select 
+          [(ngModel)]="sortDirection" 
+          (change)="onSortChange()"
+          class="filter-select"
+        >
+          <option value="desc">Decrescente</option>
+          <option value="asc">Crescente</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="pageSize">Itens por página:</label>
+        <select 
+          id="pageSize" 
+          [(ngModel)]="pageSize" 
+          (change)="onPageSizeChange()"
+          class="filter-select"
+        >
+          <option *ngFor="let size of pageSizeOptions" [value]="size">
+            {{ size }}
+          </option>
+        </select>
+      </div>
     </div>
 
     <div *ngIf="error" style="padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 4px; margin-bottom: 20px;">
@@ -50,7 +121,7 @@
             <td>{{ spend.spendDate | date: 'dd/MM/yyyy' }}</td>
             <td>R$ {{ spend.spendValue | number: '1.2-2' }}</td>
             <td>{{ spend.description }}</td>
-            <td>{{ spend.categoryId }}</td>
+            <td>{{ getCategoryName(spend.categoryId) }}</td>
             <td>
               <a [routerLink]="['/spends/edit', spend.id]" class="btn btn-secondary" style="margin-right: 5px;">
                 Editar

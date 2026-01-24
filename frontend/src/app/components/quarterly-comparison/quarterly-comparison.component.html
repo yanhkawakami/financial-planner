@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="header">
+    <h1>Comparativo dos Últimos 3 Meses</h1>
+    <a routerLink="/spends" class="btn btn-secondary">Voltar</a>
+  </div>
+
+  <div class="card">
+    <div *ngIf="error" class="error-alert">
+      {{ error }}
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Carregando dados...</p>
+    </div>
+
+    <div *ngIf="!loading && monthsData.length > 0" class="table-container">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th class="category-column">Categoria</th>
+            <th *ngFor="let monthData of monthsData" class="month-column">
+              <div class="month-header">
+                <span class="month-name">{{ monthData.month }}</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let category of allCategories">
+            <td class="category-name">{{ category }}</td>
+            <td 
+              *ngFor="let monthData of monthsData" 
+              class="value-cell"
+              [class.highlight]="isMaxCategory(monthData, category)"
+            >
+              <div class="value-wrapper">
+                <span class="value">{{ formatCurrency(getCategoryValue(monthData, category)) }}</span>
+                <span *ngIf="isMaxCategory(monthData, category)" class="max-badge">
+                  🔥 Maior
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td class="total-label">Total</td>
+            <td *ngFor="let monthData of monthsData" class="total-value">
+              {{ formatCurrency(monthData.total) }}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div *ngIf="!loading && monthsData.length === 0" class="empty-state">
+      <p>Nenhuma despesa encontrada nos últimos 3 meses.</p>
+      <a routerLink="/spends/new" class="btn btn-primary">Criar primeira despesa</a>
+    </div>
+  </div>
+</div>

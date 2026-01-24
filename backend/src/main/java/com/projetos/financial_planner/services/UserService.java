@@ -2,6 +2,7 @@ package com.projetos.financial_planner.services;
 
 import com.projetos.financial_planner.dto.UserDTO;
 import com.projetos.financial_planner.dto.UserMinDTO;
+import com.projetos.financial_planner.dto.UserProfileDTO;
 import com.projetos.financial_planner.entities.Role;
 import com.projetos.financial_planner.entities.User;
 import com.projetos.financial_planner.repositories.RoleRepository;
@@ -38,12 +39,17 @@ public class UserService implements UserDetailsService {
         return page.map(UserMinDTO::new);
     }
 
+    @Transactional(readOnly = true)
+    public UserProfileDTO getUserById(Long id){
+        User entity = repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o ID: " + id));
+        return new UserProfileDTO(entity);
+    }
+
 
     @Transactional
     public UserMinDTO create(UserDTO dto) {
         User entity = new User();
         copyDtoToEntity(dto, entity);
-        // TODO: Substituir por um constraint validation (criar a anotação UserInsert)
         if(repository.findByEmail(entity.getEmail()) != null){
             throw new UserAlreadyExistsException("Usuário já existente com esse e-mail");
         }
@@ -61,9 +67,12 @@ public class UserService implements UserDetailsService {
 
     private void copyDtoToEntity(UserDTO dto, User entity) {
         entity.setName(dto.getName());
-        entity.setEmail(dto.getEmail());
         entity.setPhone(dto.getPhone());
-        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        
+        // Só atualiza a senha se foi fornecida (não nula e não vazia)
+        if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty()) {
+            entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
 
         entity.getRoles().clear();
         if (dto.getRoles() == null || dto.getRoles().isEmpty()) {

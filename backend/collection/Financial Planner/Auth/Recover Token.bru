@@ -1,0 +1,23 @@
+meta {
+  name: Recover Token
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:8080/auth/new-password
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "token": "d45cedc1-3114-4742-80ef-2b3a196dfd2,
+    "password": "1234567"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

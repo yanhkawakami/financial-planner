@@ -10,8 +10,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 || error.status === 403) {
-        console.log('🚨 Token inválido ou expirado - fazendo logout');
+      // Só redirecionar para login se for erro de autenticação em rotas não-CRUD
+      if (error.status === 401 && !req.url.includes('/spends') && !req.url.includes('/categories')) {
         authService.logout();
         router.navigate(['/login']);
       }

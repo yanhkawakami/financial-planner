@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest } from '../../models/auth.model';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
   loading: boolean = false;
   error: string = '';
   submitted: boolean = false;
+  showPassword: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -66,5 +67,9 @@ export class LoginComponent implements OnInit {
 
   isFormValid(): boolean {
     return !!(this.credentials.username && this.credentials.password);
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

@@ -1,0 +1,89 @@
+<div class="container">
+  <div class="header">
+    <h1>Resumo Mensal de Despesas</h1>
+    <a routerLink="/spends" class="btn btn-secondary">Voltar</a>
+  </div>
+
+  <div class="card filter-card">
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilter()" class="filter-form">
+      <div class="form-group">
+        <label for="startDate">Data Inicial:</label>
+        <input type="date" id="startDate" formControlName="startDate" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="endDate">Data Final:</label>
+        <input type="date" id="endDate" formControlName="endDate" class="form-control">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div *ngIf="loading" class="loading">
+      Carregando...
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!loading && spends.length === 0" class="empty-state">
+      <p>Nenhuma despesa encontrada para o período selecionado.</p>
+    </div>
+
+    <div *ngIf="!loading && spends.length > 0">
+      <!-- Grouping/Sorting Logic logic will be needed here, for now simple table -->
+      <!-- To truly separate by category, we might want to grouping in the logic -->
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Categoria</th>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- We will just list them for now, sorted by category in the TS if possible -->
+          <tr *ngFor="let spend of spends" [class.highlight-row]="spend.categoryId === topCategoryId">
+            <td>
+              <span *ngIf="spend.categoryId === topCategoryId" title="Categoria com maior gasto">🔥</span>
+              {{ categories.get(spend.categoryId) || spend.categoryId }}
+            </td>
+            <td>{{ spend.spendDate | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ spend.description }}</td>
+            <td>R$ {{ spend.spendValue | number: '1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button (click)="previousPage()" [disabled]="currentPage === 0">
+          Anterior
+        </button>
+        <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
+          Próxima
+        </button>
+      </div>
+      
+      <div class="summary-footer">
+        Total mostrado: {{ totalElements }} despesa(s)
+      </div>
+
+      <div class="total-summary" *ngIf="!summaryLoading">
+        <div class="summary-item">
+          <strong>Total de Gastos no Período:</strong>
+          <span class="value">R$ {{ totalValue | number: '1.2-2' }}</span>
+        </div>
+        <div class="summary-item" *ngIf="topCategoryId">
+          <strong>Categoria com Maior Gasto:</strong>
+          <span class="value highlight-category">{{ topCategoryName || (categories.get(topCategoryId) || topCategoryId) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

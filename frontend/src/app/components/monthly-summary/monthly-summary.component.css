@@ -1,0 +1,134 @@
+.container {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filter-card {
+  margin-bottom: 20px;
+}
+
+.filter-form {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group select[multiple] {
+  min-width: 150px;
+  padding: 5px;
+}
+
+.btn-primary {
+  margin-top: 24px; /* Align with inputs with labels */
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background-color: #f8f9fa;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+}
+
+.summary-footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.total-summary {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f1f8ff;
+  border-radius: 8px;
+  border: 1px solid #cce5ff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.summary-item strong {
+  font-size: 1rem;
+  color: #555;
+}
+
+.summary-item .value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0056b3;
+}
+
+.highlight-category {
+  color: #d9534f !important; /* Bootstrap dangerous red kind of color for emphasis */
+}
+
+/* Highlight row in table */
+tr.highlight-row {
+  background-color: #fff0f0; /* Light red/pink background */
+}
+
+tr.highlight-row:hover {
+  background-color: #ffe0e0;
+}
+
+.form-control {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}

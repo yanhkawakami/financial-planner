@@ -1,0 +1,133 @@
+<div class="container">
+  <div class="header">
+    <h1>Meu Perfil</h1>
+    <a routerLink="/spends" class="btn btn-secondary">Voltar</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Informações Pessoais</h2>
+      <p>Atualize seus dados cadastrais</p>
+    </div>
+
+    <div *ngIf="error" class="error-alert">
+      {{ error }}
+    </div>
+
+    <div *ngIf="success" class="success-alert">
+      {{ success }}
+    </div>
+
+    <div *ngIf="loading && !userProfile" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Carregando perfil...</p>
+    </div>
+
+    <form *ngIf="!loading || userProfile" [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+      <div class="form-group">
+        <label for="name">Nome Completo *</label>
+        <input 
+          type="text" 
+          id="name" 
+          formControlName="name"
+          placeholder="Digite seu nome completo"
+          [class.error-input]="isFieldInvalid('name')"
+        />
+        <div *ngIf="isFieldInvalid('name')" class="error-message">
+          {{ getErrorMessage('name') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          class="disabled-input"
+          title="O e-mail não pode ser alterado"
+        />
+        <small class="info-text">O e-mail não pode ser alterado</small>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Telefone *</label>
+        <input 
+          type="tel" 
+          id="phone" 
+          formControlName="phone"
+          placeholder="11999999999"
+          maxlength="11"
+          [class.error-input]="isFieldInvalid('phone')"
+        />
+        <div *ngIf="isFieldInvalid('phone')" class="error-message">
+          {{ getErrorMessage('phone') }}
+        </div>
+      </div>
+
+      <div class="password-section">
+        <h3>Alterar Senha (opcional)</h3>
+        <p class="section-description">Deixe em branco se não quiser alterar a senha</p>
+
+        <div class="form-group">
+          <label for="password">Nova Senha</label>
+          <div class="password-input-container">
+            <input 
+              [type]="showPassword ? 'text' : 'password'"
+              id="password" 
+              formControlName="password"
+              placeholder="Mínimo 6 caracteres"
+            />
+            <button 
+              type="button" 
+              class="toggle-password-btn" 
+              (click)="togglePasswordVisibility()"
+              tabindex="-1"
+            >
+              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Nova Senha</label>
+          <div class="password-input-container">
+            <input 
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="confirmPassword" 
+              formControlName="confirmPassword"
+              placeholder="Repita a nova senha"
+            />
+            <button 
+              type="button" 
+              class="toggle-password-btn" 
+              (click)="toggleConfirmPasswordVisibility()"
+              tabindex="-1"
+            >
+              {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button 
+          type="button" 
+          (click)="cancel()" 
+          class="btn btn-secondary"
+          [disabled]="loading"
+        >
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="loading || profileForm.invalid"
+        >
+          <span *ngIf="loading" class="loading-spinner-small"></span>
+          {{ loading ? 'Salvando...' : 'Salvar Alterações' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

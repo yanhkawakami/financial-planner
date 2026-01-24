@@ -3,12 +3,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Spend, SpendUpdate, Page } from '../models/spend.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpendService {
-  private apiUrl = 'http://localhost:8080/spends';
+  private apiUrl = `${environment.apiUrl}/spends`;
 
   constructor(private http: HttpClient) { }
 

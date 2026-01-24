@@ -120,6 +120,13 @@ export class SpendFormComponent implements OnInit {
       return;
     }
 
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      this.error = 'Erro: Usuário não autenticado. Por favor, faça login novamente.';
+      return;
+    }
+
+    this.spend.userId = userId;
     this.loading = true;
     this.error = '';
 
@@ -131,32 +138,36 @@ export class SpendFormComponent implements OnInit {
         categoryId: this.spend.categoryId
       };
 
-      console.log('✏️ Atualizando despesa ID:', this.spendId, 'com dados:', spendUpdate);
-      
       this.spendService.updateSpend(this.spendId, spendUpdate).subscribe({
-        next: (updatedSpend) => {
-          console.log('✅ Despesa atualizada com sucesso:', updatedSpend);
+        next: () => {
           this.loading = false;
           this.router.navigate(['/spends']);
         },
         error: (err) => {
-          console.error('❌ Erro ao atualizar despesa:', err);
-          this.error = 'Erro ao atualizar despesa. Por favor, tente novamente.';
+          console.error('Erro ao atualizar despesa:', err);
+          if (err.status === 401 || err.status === 403) {
+            this.error = 'Erro de autenticação. Por favor, faça login novamente.';
+          } else {
+            this.error = 'Erro ao atualizar despesa. Por favor, tente novamente.';
+          }
           this.loading = false;
         }
       });
     } else {
-      console.log('➕ Criando nova despesa com dados:', this.spend);
-      
       this.spendService.createSpend(this.spend).subscribe({
-        next: (createdSpend) => {
-          console.log('✅ Despesa criada com sucesso:', createdSpend);
+        next: () => {
           this.loading = false;
           this.router.navigate(['/spends']);
         },
         error: (err) => {
-          console.error('❌ Erro ao criar despesa:', err);
-          this.error = 'Erro ao criar despesa. Por favor, tente novamente.';
+          console.error('Erro ao criar despesa:', err);
+          if (err.status === 401 || err.status === 403) {
+            this.error = 'Erro de autenticação. Por favor, faça login novamente.';
+          } else if (err.status === 400) {
+            this.error = 'Dados inválidos. Verifique todos os campos.';
+          } else {
+            this.error = 'Erro ao criar despesa. Por favor, tente novamente.';
+          }
           this.loading = false;
         }
       });

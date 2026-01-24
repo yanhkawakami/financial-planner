@@ -86,9 +86,10 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 		//-----------Create a new Security Context Holder Context----------
 		OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
-		// Extrair o userId do objeto User usando reflexão
+		// Extrair o userId e name do objeto User usando reflexão
 		Long userId = getUserId(user);
-		CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(userId, username, user.getAuthorities());
+		String name = getUserName(user);
+		CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(userId, username, name, user.getAuthorities());
 		oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
 		
 		var newcontext = SecurityContextHolder.createEmptyContext();
@@ -149,6 +150,18 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 			return (Long) getIdMethod.invoke(userDetails);
 		} catch (Exception e) {
 			throw new OAuth2AuthenticationException("Unable to extract user ID from UserDetails");
+		}
+	}
+
+	/**
+	 * Extrai o nome do usuário usando reflexão para evitar dependência direta da entidade User
+	 */
+	private String getUserName(UserDetails userDetails) {
+		try {
+			Method getNameMethod = userDetails.getClass().getMethod("getName");
+			return (String) getNameMethod.invoke(userDetails);
+		} catch (Exception e) {
+			throw new OAuth2AuthenticationException("Unable to extract user name from UserDetails");
 		}
 	}
 
