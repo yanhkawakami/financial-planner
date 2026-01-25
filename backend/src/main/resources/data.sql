@@ -3,6 +3,10 @@ INSERT INTO tb_category (name) VALUES ('Transporte');
 INSERT INTO tb_category (name) VALUES ('Moradia');
 INSERT INTO tb_category (name) VALUES ('Entretenimento');
 
+INSERT INTO tb_income_category (name) VALUES ('Salário');
+INSERT INTO tb_income_category (name) VALUES ('Freelance');
+INSERT INTO tb_income_category (name) VALUES ('Investimentos');
+
 INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
 INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
 
