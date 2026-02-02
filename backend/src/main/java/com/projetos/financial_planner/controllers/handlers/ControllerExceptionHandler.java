@@ -1,6 +1,7 @@
 package com.projetos.financial_planner.controllers.handlers;
 
 import com.projetos.financial_planner.dto.CustomErrorDTO;
+import com.projetos.financial_planner.services.exceptions.InvalidCategoryException;
 import com.projetos.financial_planner.services.exceptions.ResourceNotFoundException;
 import com.projetos.financial_planner.services.exceptions.UnauthorizedOperationException;
 import com.projetos.financial_planner.services.exceptions.UserAlreadyExistsException;
@@ -32,6 +33,13 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UnauthorizedOperationException.class)
     public ResponseEntity<CustomErrorDTO> unauthorizedOperation(UnauthorizedOperationException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
+        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(InvalidCategoryException.class)
+    public ResponseEntity<CustomErrorDTO> invalidCategoryException(InvalidCategoryException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
         CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }

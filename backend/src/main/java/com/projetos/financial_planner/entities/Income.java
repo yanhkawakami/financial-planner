@@ -16,7 +16,7 @@ public class Income {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "income_category_id")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
@@ -41,19 +41,19 @@ public class Income {
         this.id = id;
     }
 
-    public LocalDate getincomeDate() {
+    public LocalDate getIncomeDate() {
         return incomeDate;
     }
 
-    public void setincomeDate(LocalDate setincomeDate) {
+    public void setIncomeDate(LocalDate setincomeDate) {
         this.incomeDate = setincomeDate;
     }
 
-    public Double getincomeValue() {
+    public Double getIncomeValue() {
         return incomeValue;
     }
 
-    public void setincomeValue(Double incomeValue) {
+    public void setIncomeValue(Double incomeValue) {
         this.incomeValue = incomeValue;
     }
 

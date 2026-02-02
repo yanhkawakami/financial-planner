@@ -1,6 +1,7 @@
 package com.projetos.financial_planner.controllers;
 
 import com.projetos.financial_planner.dto.CategoryDTO;
+import com.projetos.financial_planner.enums.CategoryType;
 import com.projetos.financial_planner.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,8 +18,16 @@ public class CategoryController {
     CategoryService service;
 
     @GetMapping
-    public ResponseEntity<Page<CategoryDTO>> getCategories(Pageable pageable) {
-        return ResponseEntity.ok().body(service.getCategories(pageable));
+    public ResponseEntity<Page<CategoryDTO>> getCategories(
+            @RequestParam(required = false) CategoryType type,
+            Pageable pageable) {
+        Page<CategoryDTO> categories;
+        if (type != null) {
+            categories = service.getCategoriesByType(type, pageable);
+        } else {
+            categories = service.getCategories(pageable);
+        }
+        return ResponseEntity.ok().body(categories);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

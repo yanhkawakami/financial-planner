@@ -2,6 +2,7 @@ package com.projetos.financial_planner.services;
 
 import com.projetos.financial_planner.dto.CategoryDTO;
 import com.projetos.financial_planner.entities.Category;
+import com.projetos.financial_planner.enums.CategoryType;
 import com.projetos.financial_planner.repositories.CategoryRepository;
 import com.projetos.financial_planner.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,15 @@ public class CategoryService {
         return page.map(CategoryDTO::new);
     }
 
+    public Page<CategoryDTO> getCategoriesByType(CategoryType type, Pageable pageable) {
+        Page<Category> page = repository.findByType(type, pageable);
+        return page.map(CategoryDTO::new);
+    }
+
     public CategoryDTO createCategory(CategoryDTO dto) {
         Category category = new Category();
         category.setName(dto.getName());
+        category.setType(dto.getType());
         category = repository.save(category);
         return new CategoryDTO(category);
     }
@@ -31,6 +38,7 @@ public class CategoryService {
         Category category = repository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com o ID" + categoryId));
         category.setName(dto.getName());
+        category.setType(dto.getType());
         return repository.save(category);
     }
 

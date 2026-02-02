@@ -1,0 +1,32 @@
+meta {
+  name: Criar nova renda
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/incomes
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/12.0.0
+  Authorization: 
+}
+
+body:json {
+  {
+      "incomeDate": "2025-01-15",
+      "incomeValue": 150.50,
+      "description": "Compra no supermercado",
+      "categoryId": 3,
+      "userId": 2
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

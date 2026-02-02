@@ -1,15 +1,10 @@
 package com.projetos.financial_planner.services;
 
-import com.projetos.financial_planner.dto.SpendDTO;
-import com.projetos.financial_planner.dto.SpendUpdateDTO;
-import com.projetos.financial_planner.entities.Category;
-import com.projetos.financial_planner.entities.Role;
-import com.projetos.financial_planner.entities.Spend;
-import com.projetos.financial_planner.entities.User;
+import com.projetos.financial_planner.dto.IncomeDTO;
+import com.projetos.financial_planner.dto.IncomeUpdateDTO;
+import com.projetos.financial_planner.entities.*;
 import com.projetos.financial_planner.enums.CategoryType;
-import com.projetos.financial_planner.repositories.CategoryRepository;
-import com.projetos.financial_planner.repositories.SpendRepository;
-import com.projetos.financial_planner.repositories.UserRepository;
+import com.projetos.financial_planner.repositories.*;
 import com.projetos.financial_planner.services.exceptions.InvalidCategoryException;
 import com.projetos.financial_planner.services.exceptions.ResourceNotFoundException;
 import com.projetos.financial_planner.services.exceptions.UnauthorizedOperationException;
@@ -24,12 +19,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Service
-public class SpendService {
+public class IncomeService {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Autowired
-    SpendRepository repository;
+    IncomeRepository repository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -41,7 +36,7 @@ public class SpendService {
     UserService userService;
 
     @Transactional(readOnly = true)
-    public Page<SpendDTO> getSpends(Pageable pageable, Long userId, String startDate, String finalDate, Long categoryId) {
+    public Page<IncomeDTO> getIncomes(Pageable pageable, Long userId, String startDate, String finalDate, Long categoryId) {
         User user = userService.authenticated();
 
         if (userId != null){
@@ -62,14 +57,14 @@ public class SpendService {
         LocalDate beginDate = parseDate(startDate);
         LocalDate endDate = parseDate(finalDate);
 
-        return repository.findSpends(pageable, userId, beginDate, endDate, categoryId).map(SpendDTO::new);
+        return repository.findIncomes(pageable, userId, beginDate, endDate, categoryId).map(IncomeDTO::new);
     }
 
     @Transactional(readOnly = true)
-    public SpendDTO getSpendById(Long spendId) {
+    public IncomeDTO getIncomeById(Long incomeId) {
         Long userId = userService.authenticated().getId();
-        Spend entity = repository.findById(spendId)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + spendId));
+        Income entity = repository.findById(incomeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + incomeId));
 
         if (!userService.authenticated().isAdmin() ) {
             userId = userService.authenticated().getId();
@@ -78,13 +73,13 @@ public class SpendService {
             }
         }
 
-        return new SpendDTO(entity);
+        return new IncomeDTO(entity);
     }
 
 
     @Transactional
-    public SpendDTO create(SpendDTO dto) {
-        Spend entity = new Spend();
+    public IncomeDTO create(IncomeDTO dto) {
+        Income entity = new Income();
 
         if (!userService.authenticated().isAdmin()){
             Long authenticatedUserId = userService.authenticated().getId();
@@ -95,14 +90,14 @@ public class SpendService {
 
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
-        return new SpendDTO(entity);
+        return new IncomeDTO(entity);
     }
 
     @Transactional
-    public SpendDTO update(Long spendId, SpendUpdateDTO dto) {
+    public IncomeDTO update(Long incomeId, IncomeUpdateDTO dto) {
         Long userId = userService.authenticated().getId();
-        Spend entity = repository.findById(spendId)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + spendId));
+        Income entity = repository.findById(incomeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + incomeId));
 
         if (!userService.authenticated().isAdmin() ) {
             userId = userService.authenticated().getId();
@@ -113,13 +108,13 @@ public class SpendService {
 
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
-        return new SpendDTO(entity);
+        return new IncomeDTO(entity);
     }
 
     @Transactional
     public void delete(Long spendId) {
         Long userId = userService.authenticated().getId();
-        Spend entity = repository.findById(spendId)
+        Income entity = repository.findById(spendId)
                 .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado com ID " + spendId));
 
         if (!userService.authenticated().isAdmin() ) {
@@ -132,25 +127,25 @@ public class SpendService {
         repository.deleteById(spendId);
     }
 
-    public void copyDtoToEntity(SpendDTO dto, Spend entity) {
-        copyCommonFields(dto.getSpendValue(), dto.getDescription(), dto.getSpendDate(), dto.getCategoryId(), entity);
+    public void copyDtoToEntity(IncomeDTO dto, Income entity) {
+        copyCommonFields(dto.getIncomeValue(), dto.getDescription(), dto.getIncomeDate(), dto.getCategoryId(), entity);
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID " + dto.getUserId()));
         entity.setUser(user);
     }
 
-    public void copyDtoToEntity(SpendUpdateDTO dto, Spend entity) {
-        copyCommonFields(dto.getSpendValue(), dto.getDescription(), dto.getSpendDate(), dto.getCategoryId(), entity);
+    public void copyDtoToEntity(IncomeUpdateDTO dto, Income entity) {
+        copyCommonFields(dto.getIncomeValue(), dto.getDescription(), dto.getIncomeDate(), dto.getCategoryId(), entity);
     }
 
-    private void copyCommonFields(Double spendValue, String description, LocalDate spendDate, Long categoryId, Spend entity) {
-        entity.setSpendValue(spendValue);
+    private void copyCommonFields(Double incomeValue, String description, LocalDate incomeDate, Long categoryId, Income entity) {
+        entity.setIncomeValue(incomeValue);
         entity.setDescription(description);
-        entity.setSpendDate(spendDate);
+        entity.setIncomeDate(incomeDate);
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com ID " + categoryId));
-        if (category.getType().equals(CategoryType.INCOME)) {
-            throw new InvalidCategoryException("A categoria com ID " + categoryId + " é de receita, não de gasto");
+        if (category.getType().equals(CategoryType.SPEND)) {
+            throw new InvalidCategoryException("A categoria com ID " + categoryId + " é de gasto, não de receita");
         }
         entity.setCategory(category);
     }

@@ -1,11 +1,13 @@
-INSERT INTO tb_category (name) VALUES ('Alimentação');
-INSERT INTO tb_category (name) VALUES ('Transporte');
-INSERT INTO tb_category (name) VALUES ('Moradia');
-INSERT INTO tb_category (name) VALUES ('Entretenimento');
+-- Categories for SPEND
+INSERT INTO tb_category (name, type) VALUES ('Alimentação', 'SPEND');
+INSERT INTO tb_category (name, type) VALUES ('Transporte', 'SPEND');
+INSERT INTO tb_category (name, type) VALUES ('Moradia', 'SPEND');
+INSERT INTO tb_category (name, type) VALUES ('Entretenimento', 'SPEND');
 
-INSERT INTO tb_income_category (name) VALUES ('Salário');
-INSERT INTO tb_income_category (name) VALUES ('Freelance');
-INSERT INTO tb_income_category (name) VALUES ('Investimentos');
+-- Categories for INCOME
+INSERT INTO tb_category (name, type) VALUES ('Salário', 'INCOME');
+INSERT INTO tb_category (name, type) VALUES ('Freelance', 'INCOME');
+INSERT INTO tb_category (name, type) VALUES ('Investimentos', 'INCOME');
 
 INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
 INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
